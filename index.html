@@ -1,0 +1,1273 @@
+<!doctype html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'/>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' name='viewport'/>
+    <title>Social Feed — Videos, Stories &amp; Global Updates</title>
+    <meta content='A responsive social-style feed with gaming guidance, entertainment videos, sample thumbnails, and a global news section.' name='description'/>
+    <meta content='index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1' name='robots'/>
+
+    <style type='text/css'><![CDATA[
+        :root {
+            --bg: #07101f;
+            --bg-2: #0b1730;
+            --card: rgba(15, 28, 50, 0.92);
+            --card-2: rgba(18, 34, 60, 0.96);
+            --text: #eef4ff;
+            --muted: #9eb0c8;
+            --line: rgba(163, 185, 216, 0.13);
+            --blue: #2584ff;
+            --blue-2: #4aa1ff;
+            --shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
+            --radius: 20px;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            width: 100%;
+            min-width: 0;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            width: 100%;
+            overflow-x: hidden;
+            font-family: "Segoe UI", Inter, system-ui, -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at 10% 0%, rgba(37,132,255,.17), transparent 28%),
+                radial-gradient(circle at 90% 15%, rgba(93,68,255,.13), transparent 26%),
+                linear-gradient(180deg, #07101f 0%, #091528 45%, #07101f 100%);
+            font-size: 16px;
+        }
+
+        a {
+            color: inherit;
+        }
+
+        .site-shell {
+            width: min(1120px, calc(100% - 26px));
+            margin: 0 auto;
+            padding: 18px 0 44px;
+        }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            margin-bottom: 18px;
+            padding: 12px 0;
+            background: linear-gradient(180deg, rgba(7,16,31,.96), rgba(7,16,31,.72), transparent);
+            backdrop-filter: blur(12px);
+        }
+
+        .topbar-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 12px 15px;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            background: rgba(10, 23, 43, .78);
+            box-shadow: var(--shadow);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            min-width: 0;
+        }
+
+        .brand-mark {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            flex: 0 0 auto;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--blue), #6e63ff);
+            box-shadow: 0 8px 22px rgba(37,132,255,.28);
+            font-weight: 900;
+        }
+
+        .brand-text {
+            min-width: 0;
+        }
+
+        .brand-name {
+            margin: 0;
+            font-size: 1.05rem;
+            font-weight: 900;
+            letter-spacing: .1px;
+        }
+
+        .brand-sub {
+            margin-top: 2px;
+            color: var(--muted);
+            font-size: .74rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .activity-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 11px;
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 999px;
+            color: #d6e4f6;
+            background: rgba(255,255,255,.04);
+            font-size: .77rem;
+            white-space: nowrap;
+        }
+
+        .activity-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #35d488;
+            box-shadow: 0 0 0 5px rgba(53,212,136,.08);
+        }
+
+        .activity-number {
+            color: #ffffff;
+            font-weight: 800;
+        }
+
+        .hero {
+            padding: 30px 24px;
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            background:
+                linear-gradient(135deg, rgba(22,42,74,.96), rgba(11,25,48,.94)),
+                radial-gradient(circle at 80% 20%, rgba(74,161,255,.15), transparent 30%);
+            box-shadow: var(--shadow);
+            margin-bottom: 18px;
+        }
+
+        .hero-kicker {
+            display: inline-block;
+            margin-bottom: 11px;
+            color: #8fc1ff;
+            font-weight: 800;
+            font-size: .78rem;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+        }
+
+        .hero h1 {
+            margin: 0 0 10px;
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            line-height: 1.08;
+        }
+
+        .hero p {
+            max-width: 760px;
+            margin: 0;
+            color: #b8c7da;
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        .feed-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.35fr) minmax(300px, .65fr);
+            gap: 18px;
+            align-items: start;
+        }
+
+        .main-column, .side-column {
+            min-width: 0;
+        }
+
+        .section-card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 18px;
+        }
+
+        .section-head {
+            padding: 19px 20px 13px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .section-head h2 {
+            margin: 0;
+            font-size: 1.16rem;
+            line-height: 1.35;
+        }
+
+        .section-head p {
+            margin: 6px 0 0;
+            color: var(--muted);
+            font-size: .87rem;
+            line-height: 1.55;
+        }
+
+        .section-body {
+            padding: 19px 20px 21px;
+        }
+
+        .article-lines {
+            margin: 0 0 9px;
+            color: #cbd8e8;
+            font-size: .95rem;
+            line-height: 1.72;
+        }
+
+        .article-lines:last-child {
+            margin-bottom: 0;
+        }
+
+        .notice {
+            margin: 15px 0 18px;
+            padding: 11px 13px;
+            border-radius: 13px;
+            border: 1px solid rgba(74,161,255,.17);
+            background: rgba(37,132,255,.07);
+            color: #b7d5ff;
+            font-size: .79rem;
+            line-height: 1.55;
+        }
+
+        .video-frame {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border-radius: 16px;
+            background: #030812;
+            border: 1px solid rgba(255,255,255,.07);
+            box-shadow: 0 12px 28px rgba(0,0,0,.22);
+        }
+
+        .video-frame iframe {
+            width: 100%;
+            height: 100%;
+            display: block;
+            border: 0;
+        }
+
+        .media-title {
+            margin: 14px 0 4px;
+            font-size: 1.05rem;
+            font-weight: 850;
+        }
+
+        .media-subtitle {
+            margin: 0 0 14px;
+            color: var(--muted);
+            font-size: .82rem;
+            line-height: 1.55;
+        }
+
+        .next-wrap {
+            display: flex;
+            justify-content: center;
+            padding: 18px 20px 20px;
+            border-top: 1px solid var(--line);
+        }
+
+        .next-btn {
+            appearance: none;
+            border: 0;
+            width: auto;
+            min-width: 118px;
+            padding: 9px 14px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--blue), var(--blue-2));
+            color: #fff;
+            font-size: .82rem;
+            font-weight: 800;
+            line-height: 1.1;
+            cursor: pointer;
+            box-shadow: 0 9px 20px rgba(37,132,255,.22);
+            transition: transform .18s ease, filter .18s ease, box-shadow .18s ease;
+        }
+
+        .next-btn:hover {
+            filter: brightness(1.08);
+            box-shadow: 0 11px 23px rgba(37,132,255,.29);
+            transform: translateY(-1px);
+        }
+
+        .next-btn:active {
+            transform: translateY(1px);
+        }
+
+        .next-btn.small {
+            min-width: 110px;
+        }
+
+        .thumb-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0,1fr));
+            gap: 12px;
+        }
+
+        .video-card {
+            border: 1px solid var(--line);
+            background: var(--card-2);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .fake-thumb {
+            position: relative;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            background: linear-gradient(135deg, #152f62, #101832);
+        }
+
+        .thumb-pattern {
+            position: absolute;
+            inset: -25%;
+            opacity: .95;
+            background:
+                radial-gradient(circle at 25% 28%, rgba(255,255,255,.25), transparent 10%),
+                radial-gradient(circle at 75% 65%, rgba(255,255,255,.18), transparent 15%),
+                linear-gradient(135deg, rgba(74,161,255,.68), rgba(111,87,255,.22));
+            transform: rotate(-8deg) scale(1.15);
+        }
+
+        .thumb-2 .thumb-pattern { background: linear-gradient(135deg, rgba(255,164,79,.8), rgba(74,161,255,.24)); }
+        .thumb-3 .thumb-pattern { background: linear-gradient(135deg, rgba(54,222,169,.78), rgba(71,112,255,.22)); }
+        .thumb-4 .thumb-pattern { background: linear-gradient(135deg, rgba(246,100,190,.78), rgba(87,113,255,.24)); }
+        .thumb-5 .thumb-pattern { background: linear-gradient(135deg, rgba(255,213,88,.77), rgba(129,90,255,.23)); }
+        .thumb-6 .thumb-pattern { background: linear-gradient(135deg, rgba(75,183,255,.82), rgba(78,71,255,.22)); }
+        .thumb-7 .thumb-pattern { background: linear-gradient(135deg, rgba(255,103,108,.82), rgba(114,72,255,.24)); }
+        .thumb-8 .thumb-pattern { background: linear-gradient(135deg, rgba(90,225,156,.8), rgba(16,142,255,.24)); }
+
+        .fake-play {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            padding-left: 2px;
+            background: rgba(0,0,0,.4);
+            border: 1px solid rgba(255,255,255,.35);
+            backdrop-filter: blur(5px);
+            font-size: 1rem;
+        }
+
+        .duration {
+            position: absolute;
+            right: 7px;
+            bottom: 7px;
+            padding: 3px 6px;
+            border-radius: 6px;
+            background: rgba(0,0,0,.68);
+            color: #fff;
+            font-size: .67rem;
+            font-weight: 700;
+        }
+
+        .sample-label {
+            position: absolute;
+            left: 7px;
+            top: 7px;
+            padding: 3px 6px;
+            border-radius: 6px;
+            background: rgba(5,11,21,.67);
+            border: 1px solid rgba(255,255,255,.17);
+            color: #dfeaff;
+            font-size: .58rem;
+            font-weight: 850;
+            letter-spacing: .08em;
+        }
+
+        .video-card-body {
+            padding: 10px 11px 12px;
+        }
+
+        .video-title {
+            font-size: .82rem;
+            font-weight: 800;
+            line-height: 1.35;
+        }
+
+        .video-meta {
+            margin-top: 4px;
+            color: #7f93ad;
+            font-size: .68rem;
+            line-height: 1.35;
+        }
+
+        .side-note {
+            padding: 16px;
+            color: #b9c9da;
+            font-size: .83rem;
+            line-height: 1.65;
+        }
+
+        .side-note strong {
+            color: #f2f7ff;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn .38s ease;
+        }
+
+        .page-loader {
+            display: none;
+            min-height: 140px;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px;
+            color: #bcd0e7;
+        }
+
+        .page-loader.show {
+            display: flex;
+        }
+
+        .loader-box {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .spinner {
+            width: 17px;
+            height: 17px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,.15);
+            border-top-color: #55a6ff;
+            animation: spin .7s linear infinite;
+        }
+
+        .footer {
+            padding: 4px 4px 0;
+            color: #70839c;
+            font-size: .72rem;
+            text-align: center;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 900px) {
+            .feed-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .site-shell {
+                width: min(100% - 16px, 1120px);
+                padding-top: 8px;
+            }
+
+            .topbar-inner {
+                border-radius: 15px;
+            }
+
+            .brand-sub {
+                display: none;
+            }
+
+            .hero {
+                padding: 24px 18px;
+                border-radius: 20px;
+            }
+
+            .section-head {
+                padding: 17px 16px 12px;
+            }
+
+            .section-body {
+                padding: 16px;
+            }
+
+            .thumb-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 9px;
+            }
+
+            .video-card-body {
+                padding: 9px;
+            }
+
+            .video-title {
+                font-size: .78rem;
+            }
+
+            .activity-pill {
+                padding: 7px 9px;
+                font-size: .68rem;
+            }
+
+            .article-lines {
+                font-size: .92rem;
+                line-height: 1.68;
+            }
+        }
+
+        @media (max-width: 410px) {
+            .thumb-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h1 {
+                font-size: 1.75rem;
+            }
+
+            .next-btn {
+                min-width: 108px;
+                padding: 9px 12px;
+            }
+        }
+    ]]></style>
+
+</head>
+
+<body>
+    <div class='site-shell'>
+        <div class='topbar'>
+            <div class='topbar-inner'>
+                <div class='brand'>
+                    <div class='brand-mark'>SF</div>
+                    <div class='brand-text'>
+                        <div class='brand-name'>Social Feed</div>
+                        <div class='brand-sub'>Videos • Stories • Global Updates</div>
+                    </div>
+                </div>
+
+                <div class='activity-pill' title='Illustrative activity counter; not verified live analytics'>
+                    <span class='activity-dot'></span>
+                    <span>Active Members</span>
+                    <span class='activity-number' id='activeMemberCount'>—</span>
+                </div>
+            </div>
+        </div>
+
+        <div class='hero'>
+            <span class='hero-kicker'>Social Feed</span>
+            <h1>Watch, Read, Scroll &amp; Discover</h1>
+            <p>A clean social-style experience for videos, entertainment stories, gaming guides, sample previews, and international updates.</p>
+        </div>
+
+        <div id='page1' class='page active'>
+            <div class='feed-grid'>
+                <main class='main-column'>
+                    <section class='section-card'>
+                        <div class='section-head'>
+                            <h2>How to Download &amp; Play Games on Steam</h2>
+                            <p>A simple 30-line English guide for new PC gamers.</p>
+                        </div>
+                        <div class='section-body'>
+                            <p class="article-lines">1. Steam is a digital platform where you can buy, download, and play PC games.</p>
+<p class="article-lines">2. Start by creating or signing in to your Steam account.</p>
+<p class="article-lines">3. Install the official Steam client on your Windows, macOS, or Linux computer.</p>
+<p class="article-lines">4. Open Steam and sign in with the account you want to use for gaming.</p>
+<p class="article-lines">5. Use the Store page to search for the game you want to play.</p>
+<p class="article-lines">6. Open the game&#x27;s store page and check its system requirements.</p>
+<p class="article-lines">7. Review the game&#x27;s supported operating system and available storage requirement.</p>
+<p class="article-lines">8. Choose a legitimate purchase, free-to-play option, or a key from an authorized seller.</p>
+<p class="article-lines">9. After the game is added to your account, open the Library section.</p>
+<p class="article-lines">10. Select the game title from your Steam Library.</p>
+<p class="article-lines">11. Click the Install button to begin the normal download process.</p>
+<p class="article-lines">12. Choose the drive or folder where you want the game to be installed.</p>
+<p class="article-lines">13. Steam will show the required storage space before the installation starts.</p>
+<p class="article-lines">14. Confirm the location and let Steam begin downloading the game files.</p>
+<p class="article-lines">15. The Downloads area shows the current progress and network activity.</p>
+<p class="article-lines">16. Keep enough free storage space available until the installation finishes.</p>
+<p class="article-lines">17. A wired connection can be useful when you need a stable large download.</p>
+<p class="article-lines">18. Avoid closing Steam before an important download has completed.</p>
+<p class="article-lines">19. When the files are ready, Steam performs the installation automatically.</p>
+<p class="article-lines">20. Some games may download additional updates before the first launch.</p>
+<p class="article-lines">21. Open your Library again after the installation reaches completion.</p>
+<p class="article-lines">22. Select the game and click Play to launch it.</p>
+<p class="article-lines">23. On the first launch, the game may create settings or install required components.</p>
+<p class="article-lines">24. Read the game&#x27;s own instructions for graphics, audio, and controller settings.</p>
+<p class="article-lines">25. You can adjust resolution, quality, frame rate, and other options in the game.</p>
+<p class="article-lines">26. Steam can keep supported games updated automatically.</p>
+<p class="article-lines">27. Cloud saves may synchronize supported save files across compatible devices.</p>
+<p class="article-lines">28. Always keep your Steam account protected with a strong password and security features.</p>
+<p class="article-lines">29. Download games only through legitimate sources to reduce the risk of scams or malware.</p>
+<p class="article-lines">30. Once everything is ready, press Play, choose your settings, and enjoy your game.</p>
+                        </div>
+                    </section>
+
+                    <section class='section-card'>
+                        <div class='section-head'>
+                            <h2>Enjoy Arijit Singh — Music Pick</h2>
+                            <p>Tum Hi Ho from Aashiqui 2, embedded directly through the YouTube player.</p>
+                        </div>
+                        <div class='section-body'>
+                            <div class='video-frame'>
+                                <iframe src='https://www.youtube.com/embed/WgOhlwxU7eE?si=blMD7kzHdytKVBbB'
+                                        title='Arijit Singh music video'
+                                        loading='lazy'
+                                        allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+                                        referrerpolicy='strict-origin-when-cross-origin'
+                                        allowfullscreen='allowfullscreen'></iframe>
+                            </div>
+                            <div class='notice'>The player stays native to YouTube, so supported controls such as playback speed, fullscreen, seeking, and other YouTube features remain available.</div>
+                            <h3 class='media-title'>About “Tum Hi Ho”</h3>
+                            <p class='media-subtitle'>Original editorial-style overview with 30 short lines.</p>
+                            <p class="article-lines">1. Tum Hi Ho is a Hindi-language romantic song from the film Aashiqui 2.</p>
+<p class="article-lines">2. The song was sung by Arijit Singh and composed by Mithoon.</p>
+<p class="article-lines">3. Mithoon also wrote the song, giving the track a closely connected musical identity.</p>
+<p class="article-lines">4. The song became one of the most recognizable tracks associated with Aashiqui 2.</p>
+<p class="article-lines">5. Its central mood is built around intense romantic attachment and emotional longing.</p>
+<p class="article-lines">6. Arijit Singh&#x27;s vocal performance keeps the arrangement intimate and expressive.</p>
+<p class="article-lines">7. The melody gives the singer room to move from soft passages to stronger emotional peaks.</p>
+<p class="article-lines">8. The production uses a polished Bollywood ballad approach rather than a dance-focused structure.</p>
+<p class="article-lines">9. The track appeared as part of the Aashiqui 2 soundtrack released in 2013.</p>
+<p class="article-lines">10. Aashiqui 2 was directed by Mohit Suri and featured Aditya Roy Kapur and Shraddha Kapoor.</p>
+<p class="article-lines">11. Tum Hi Ho is closely associated with the film&#x27;s romantic narrative.</p>
+<p class="article-lines">12. The music video places the song within the emotional world of the two lead characters.</p>
+<p class="article-lines">13. The arrangement supports the feeling of devotion that drives the song&#x27;s theme.</p>
+<p class="article-lines">14. A restrained opening helps the vocal enter without overwhelming the melody.</p>
+<p class="article-lines">15. The musical build gradually increases the sense of emotional intensity.</p>
+<p class="article-lines">16. Arijit Singh&#x27;s controlled delivery is a major part of the song&#x27;s character.</p>
+<p class="article-lines">17. The song is often remembered for its singable melody and strong emotional phrasing.</p>
+<p class="article-lines">18. Its popularity also helped keep the Aashiqui 2 soundtrack highly visible.</p>
+<p class="article-lines">19. The track has remained widely recognized long after its original release.</p>
+<p class="article-lines">20. It is commonly revisited through music videos, streaming services, and fan performances.</p>
+<p class="article-lines">21. The song&#x27;s appeal comes from a simple emotional idea presented with a memorable melody.</p>
+<p class="article-lines">22. Its repeated phrases reinforce the feeling of certainty and emotional dependence.</p>
+<p class="article-lines">23. The production leaves space around the main vocal rather than filling every moment.</p>
+<p class="article-lines">24. This balance helps the listener focus on the song&#x27;s central mood.</p>
+<p class="article-lines">25. The track works naturally for quiet listening because its arrangement is emotionally focused.</p>
+<p class="article-lines">26. It also became part of the wider musical identity of the Aashiqui franchise.</p>
+<p class="article-lines">27. Arijit Singh&#x27;s delivery became one of the defining elements listeners associated with the track.</p>
+<p class="article-lines">28. The song remains a familiar reference point for modern Hindi romantic music.</p>
+<p class="article-lines">29. Its continuing presence on video and streaming platforms shows its lasting audience appeal.</p>
+<p class="article-lines">30. Press play, enjoy the music, and experience the atmosphere of this well-known Bollywood ballad.</p>
+                        </div>
+                    </section>
+
+                    <section class='section-card'>
+                        <div class='section-head'>
+                            <h2>Enjoy Premium Movie Pick — Dunki</h2>
+                            <p>Explore a short article about the Shah Rukh Khan film before moving to the next page.</p>
+                        </div>
+                        <div class='section-body'>
+                            <div class='video-frame'>
+                                <iframe src='https://www.youtube.com/embed/_XLRxsbH79A?si=saQ1OfYWxv1kisAI'
+                                        title='Dunki movie video'
+                                        loading='lazy'
+                                        allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+                                        referrerpolicy='strict-origin-when-cross-origin'
+                                        allowfullscreen='allowfullscreen'></iframe>
+                            </div>
+                            <div class='notice'>Video controls are provided by the embedded YouTube player.</div>
+                            <h3 class='media-title'>About Dunki</h3>
+                            <p class='media-subtitle'>A 30-line English article covering the film, characters, themes, and production details.</p>
+                            <p class="article-lines">1. Dunki is a Hindi-language film released in 2023.</p>
+<p class="article-lines">2. The film was directed by Rajkumar Hirani.</p>
+<p class="article-lines">3. Shah Rukh Khan leads the cast as Hardy Singh.</p>
+<p class="article-lines">4. Taapsee Pannu plays Manu, one of the central characters.</p>
+<p class="article-lines">5. Vicky Kaushal appears in a special appearance as Sukhi.</p>
+<p class="article-lines">6. Boman Irani is also part of the principal cast.</p>
+<p class="article-lines">7. The story follows a group of friends connected by a shared dream of reaching another country.</p>
+<p class="article-lines">8. Friendship and loyalty are important parts of the film&#x27;s emotional structure.</p>
+<p class="article-lines">9. The title references the phrase &#x27;Dunki route&#x27; associated with irregular migration journeys.</p>
+<p class="article-lines">10. The story moves between different stages of the characters&#x27; lives.</p>
+<p class="article-lines">11. Memories and nostalgia connect the characters across time.</p>
+<p class="article-lines">12. The film combines drama, comedy, friendship, and emotional family themes.</p>
+<p class="article-lines">13. Rajkumar Hirani&#x27;s direction places human relationships at the center of the story.</p>
+<p class="article-lines">14. Shah Rukh Khan&#x27;s character is motivated by a promise made to his friends.</p>
+<p class="article-lines">15. The group faces practical and emotional difficulties during their journey.</p>
+<p class="article-lines">16. The narrative explores the cost of leaving home in search of a different future.</p>
+<p class="article-lines">17. It also shows how old friendships can remain meaningful across many years.</p>
+<p class="article-lines">18. The film uses humor to lighten sections of an otherwise serious subject.</p>
+<p class="article-lines">19. Emotional scenes focus on sacrifice, separation, hope, and reunion.</p>
+<p class="article-lines">20. The visual storytelling moves between familiar hometown spaces and foreign locations.</p>
+<p class="article-lines">21. The soundtrack supports the film&#x27;s themes of travel, memory, and emotion.</p>
+<p class="article-lines">22. The movie was presented by Jio Studios, Red Chillies Entertainment, and Rajkumar Hirani Films.</p>
+<p class="article-lines">23. Rajkumar Hirani and Gauri Khan are credited as producers.</p>
+<p class="article-lines">24. The film&#x27;s cast brings together established Bollywood performers in different roles.</p>
+<p class="article-lines">25. Dunki also explores how dreams can change as people grow older.</p>
+<p class="article-lines">26. The friendship at the heart of the story becomes a source of strength during difficult moments.</p>
+<p class="article-lines">27. Its emotional tone shifts between light comedy and serious personal choices.</p>
+<p class="article-lines">28. The film gives its central characters a long-term journey rather than a single-day adventure.</p>
+<p class="article-lines">29. This combination of friendship, migration, humor, and emotion shapes the film&#x27;s identity.</p>
+<p class="article-lines">30. Watch the embedded video above, then continue to the next page for the world news section.</p>
+                        </div>
+
+                        <div class='next-wrap'>
+                            <button class='next-btn' type='button' onclick='showPage2()'>Next →</button>
+                        </div>
+                    </section>
+                </main>
+
+                <aside class='side-column'>
+                    <section class='section-card'>
+                        <div class='section-head'>
+                            <h2>Trending Samples</h2>
+                            <p>These thumbnails are design placeholders, not real videos.</p>
+                        </div>
+                        <div class='section-body'>
+                            <div class='thumb-grid'>
+                                
+        <div class="video-card" role="article">
+            <div class="fake-thumb thumb-2">
+                <div class="thumb-pattern"></div>
+                <span class="fake-play" aria-hidden="true">▶</span>
+                <span class="duration">2:18</span>
+                <span class="sample-label">SAMPLE</span>
+            </div>
+            <div class="video-card-body">
+                <div class="video-title">Night Drive Edit</div>
+                <div class="video-meta">Demo preview • Not a real video</div>
+            </div>
+        </div>
+    
+        <div class="video-card" role="article">
+            <div class="fake-thumb thumb-3">
+                <div class="thumb-pattern"></div>
+                <span class="fake-play" aria-hidden="true">▶</span>
+                <span class="duration">4:05</span>
+                <span class="sample-label">SAMPLE</span>
+            </div>
+            <div class="video-card-body">
+                <div class="video-title">Street Food Tour</div>
+                <div class="video-meta">Demo preview • Not a real video</div>
+            </div>
+        </div>
+    
+        <div class="video-card" role="article">
+            <div class="fake-thumb thumb-4">
+                <div class="thumb-pattern"></div>
+                <span class="fake-play" aria-hidden="true">▶</span>
+                <span class="duration">3:22</span>
+                <span class="sample-label">SAMPLE</span>
+            </div>
+            <div class="video-card-body">
+                <div class="video-title">PC Setup Ideas</div>
+                <div class="video-meta">Demo preview • Not a real video</div>
+            </div>
+        </div>
+    
+        <div class="video-card" role="article">
+            <div class="fake-thumb thumb-5">
+                <div class="thumb-pattern"></div>
+                <span class="fake-play" aria-hidden="true">▶</span>
+                <span class="duration">5:10</span>
+                <span class="sample-label">SAMPLE</span>
+            </div>
+            <div class="video-card-body">
+                <div class="video-title">Mobile Photography</div>
+                <div class="video-meta">Demo preview • Not a real video</div>
+            </div>
+        </div>
+    
+        <div class="video-card" role="article">
+            <div class="fake-thumb thumb-6">
+                <div class="thumb-pattern"></div>
+                <span class="fake-play" aria-hidden="true">▶</span>
+                <span class="duration">6:41</span>
+                <span class="sample-label">SAMPLE</span>
+            </div>
+            <div class="video-card-body">
+                <div class="video-title">Best Game Moments</div>
+                <div class="video-meta">Demo preview • Not a real video</div>
+            </div>
+        </div>
+    
+        <div class="video-card" role="article">
+            <div class="fake-thumb thumb-7">
+                <div class="thumb-pattern"></div>
+                <span class="fake-play" aria-hidden="true">▶</span>
+                <span class="duration">8:03</span>
+                <span class="sample-label">SAMPLE</span>
+            </div>
+            <div class="video-card-body">
+                <div class="video-title">City Walk 4K</div>
+                <div class="video-meta">Demo preview • Not a real video</div>
+            </div>
+        </div>
+    
+        <div class="video-card" role="article">
+            <div class="fake-thumb thumb-8">
+                <div class="thumb-pattern"></div>
+                <span class="fake-play" aria-hidden="true">▶</span>
+                <span class="duration">2:52</span>
+                <span class="sample-label">SAMPLE</span>
+            </div>
+            <div class="video-card-body">
+                <div class="video-title">Comedy Clips</div>
+                <div class="video-meta">Demo preview • Not a real video</div>
+            </div>
+        </div>
+    
+        <div class="video-card" role="article">
+            <div class="fake-thumb thumb-1">
+                <div class="thumb-pattern"></div>
+                <span class="fake-play" aria-hidden="true">▶</span>
+                <span class="duration">4:36</span>
+                <span class="sample-label">SAMPLE</span>
+            </div>
+            <div class="video-card-body">
+                <div class="video-title">Football Skills</div>
+                <div class="video-meta">Demo preview • Not a real video</div>
+            </div>
+        </div>
+    
+        <div class="video-card" role="article">
+            <div class="fake-thumb thumb-2">
+                <div class="thumb-pattern"></div>
+                <span class="fake-play" aria-hidden="true">▶</span>
+                <span class="duration">7:12</span>
+                <span class="sample-label">SAMPLE</span>
+            </div>
+            <div class="video-card-body">
+                <div class="video-title">Travel Vlog</div>
+                <div class="video-meta">Demo preview • Not a real video</div>
+            </div>
+        </div>
+    
+        <div class="video-card" role="article">
+            <div class="fake-thumb thumb-3">
+                <div class="thumb-pattern"></div>
+                <span class="fake-play" aria-hidden="true">▶</span>
+                <span class="duration">5:29</span>
+                <span class="sample-label">SAMPLE</span>
+            </div>
+            <div class="video-card-body">
+                <div class="video-title">Tech News Daily</div>
+                <div class="video-meta">Demo preview • Not a real video</div>
+            </div>
+        </div>
+    
+        <div class="video-card" role="article">
+            <div class="fake-thumb thumb-4">
+                <div class="thumb-pattern"></div>
+                <span class="fake-play" aria-hidden="true">▶</span>
+                <span class="duration">3:44</span>
+                <span class="sample-label">SAMPLE</span>
+            </div>
+            <div class="video-card-body">
+                <div class="video-title">Beautiful Nature</div>
+                <div class="video-meta">Demo preview • Not a real video</div>
+            </div>
+        </div>
+    
+        <div class="video-card" role="article">
+            <div class="fake-thumb thumb-5">
+                <div class="thumb-pattern"></div>
+                <span class="fake-play" aria-hidden="true">▶</span>
+                <span class="duration">4:18</span>
+                <span class="sample-label">SAMPLE</span>
+            </div>
+            <div class="video-card-body">
+                <div class="video-title">Movie Scene Edit</div>
+                <div class="video-meta">Demo preview • Not a real video</div>
+            </div>
+        </div>
+    
+        <div class="video-card" role="article">
+            <div class="fake-thumb thumb-6">
+                <div class="thumb-pattern"></div>
+                <span class="fake-play" aria-hidden="true">▶</span>
+                <span class="duration">6:25</span>
+                <span class="sample-label">SAMPLE</span>
+            </div>
+            <div class="video-card-body">
+                <div class="video-title">Gaming Highlights</div>
+                <div class="video-meta">Demo preview • Not a real video</div>
+            </div>
+        </div>
+    
+        <div class="video-card" role="article">
+            <div class="fake-thumb thumb-7">
+                <div class="thumb-pattern"></div>
+                <span class="fake-play" aria-hidden="true">▶</span>
+                <span class="duration">9:02</span>
+                <span class="sample-label">SAMPLE</span>
+            </div>
+            <div class="video-card-body">
+                <div class="video-title">Music Mix</div>
+                <div class="video-meta">Demo preview • Not a real video</div>
+            </div>
+        </div>
+    
+        <div class="video-card" role="article">
+            <div class="fake-thumb thumb-8">
+                <div class="thumb-pattern"></div>
+                <span class="fake-play" aria-hidden="true">▶</span>
+                <span class="duration">3:31</span>
+                <span class="sample-label">SAMPLE</span>
+            </div>
+            <div class="video-card-body">
+                <div class="video-title">Smartphone Tips</div>
+                <div class="video-meta">Demo preview • Not a real video</div>
+            </div>
+        </div>
+    
+        <div class="video-card" role="article">
+            <div class="fake-thumb thumb-1">
+                <div class="thumb-pattern"></div>
+                <span class="fake-play" aria-hidden="true">▶</span>
+                <span class="duration">2:09</span>
+                <span class="sample-label">SAMPLE</span>
+            </div>
+            <div class="video-card-body">
+                <div class="video-title">Funny Reactions</div>
+                <div class="video-meta">Demo preview • Not a real video</div>
+            </div>
+        </div>
+    
+        <div class="video-card" role="article">
+            <div class="fake-thumb thumb-2">
+                <div class="thumb-pattern"></div>
+                <span class="fake-play" aria-hidden="true">▶</span>
+                <span class="duration">5:55</span>
+                <span class="sample-label">SAMPLE</span>
+            </div>
+            <div class="video-card-body">
+                <div class="video-title">Ocean Views</div>
+                <div class="video-meta">Demo preview • Not a real video</div>
+            </div>
+        </div>
+    
+        <div class="video-card" role="article">
+            <div class="fake-thumb thumb-3">
+                <div class="thumb-pattern"></div>
+                <span class="fake-play" aria-hidden="true">▶</span>
+                <span class="duration">7:48</span>
+                <span class="sample-label">SAMPLE</span>
+            </div>
+            <div class="video-card-body">
+                <div class="video-title">Top 10 Gadgets</div>
+                <div class="video-meta">Demo preview • Not a real video</div>
+            </div>
+        </div>
+    
+        <div class="video-card" role="article">
+            <div class="fake-thumb thumb-4">
+                <div class="thumb-pattern"></div>
+                <span class="fake-play" aria-hidden="true">▶</span>
+                <span class="duration">3:15</span>
+                <span class="sample-label">SAMPLE</span>
+            </div>
+            <div class="video-card-body">
+                <div class="video-title">Rainy Day Vibes</div>
+                <div class="video-meta">Demo preview • Not a real video</div>
+            </div>
+        </div>
+    
+        <div class="video-card" role="article">
+            <div class="fake-thumb thumb-5">
+                <div class="thumb-pattern"></div>
+                <span class="fake-play" aria-hidden="true">▶</span>
+                <span class="duration">5:08</span>
+                <span class="sample-label">SAMPLE</span>
+            </div>
+            <div class="video-card-body">
+                <div class="video-title">Football News</div>
+                <div class="video-meta">Demo preview • Not a real video</div>
+            </div>
+        </div>
+    
+        <div class="video-card" role="article">
+            <div class="fake-thumb thumb-6">
+                <div class="thumb-pattern"></div>
+                <span class="fake-play" aria-hidden="true">▶</span>
+                <span class="duration">6:16</span>
+                <span class="sample-label">SAMPLE</span>
+            </div>
+            <div class="video-card-body">
+                <div class="video-title">Coding Tips</div>
+                <div class="video-meta">Demo preview • Not a real video</div>
+            </div>
+        </div>
+    
+        <div class="video-card" role="article">
+            <div class="fake-thumb thumb-7">
+                <div class="thumb-pattern"></div>
+                <span class="fake-play" aria-hidden="true">▶</span>
+                <span class="duration">4:49</span>
+                <span class="sample-label">SAMPLE</span>
+            </div>
+            <div class="video-card-body">
+                <div class="video-title">Weekend Travel</div>
+                <div class="video-meta">Demo preview • Not a real video</div>
+            </div>
+        </div>
+    
+        <div class="video-card" role="article">
+            <div class="fake-thumb thumb-8">
+                <div class="thumb-pattern"></div>
+                <span class="fake-play" aria-hidden="true">▶</span>
+                <span class="duration">3:06</span>
+                <span class="sample-label">SAMPLE</span>
+            </div>
+            <div class="video-card-body">
+                <div class="video-title">Kitchen Ideas</div>
+                <div class="video-meta">Demo preview • Not a real video</div>
+            </div>
+        </div>
+    
+        <div class="video-card" role="article">
+            <div class="fake-thumb thumb-1">
+                <div class="thumb-pattern"></div>
+                <span class="fake-play" aria-hidden="true">▶</span>
+                <span class="duration">2:40</span>
+                <span class="sample-label">SAMPLE</span>
+            </div>
+            <div class="video-card-body">
+                <div class="video-title">Daily Motivation</div>
+                <div class="video-meta">Demo preview • Not a real video</div>
+            </div>
+        </div>
+    
+                            </div>
+                        </div>
+                    </section>
+
+                </aside>
+            </div>
+        </div>
+
+        <div id='page2' class='page'>
+            <section class='section-card'>
+                <div class='section-head'>
+                    <h2>International News Briefing</h2>
+                    <p>Selected world updates from September 28, 2026, summarized in short lines.</p>
+                </div>
+                <div class='section-body'>
+                    <p class="article-lines">1. International News Briefing — September 28, 2026.</p>
+<p class="article-lines">2. Reuters reported that U.S. and Iranian representatives were expected to hold separate mediated talks.</p>
+<p class="article-lines">3. The talks were described as part of a fresh diplomatic effort to end the conflict.</p>
+<p class="article-lines">4. Qatar was reported as a mediator in the separate discussions.</p>
+<p class="article-lines">5. Reuters said the talks were expected to focus on an amended seven-day proposal.</p>
+<p class="article-lines">6. Global markets were also in focus as the month and third quarter approached their close.</p>
+<p class="article-lines">7. Reuters reported that bond markets were facing a closely watched week for economic data.</p>
+<p class="article-lines">8. The upcoming U.S. employment report was identified as an important market event.</p>
+<p class="article-lines">9. AP reported that global share markets were trading mixed on Monday.</p>
+<p class="article-lines">10. Oil prices were moving higher amid ongoing uncertainty linked to Middle East developments.</p>
+<p class="article-lines">11. Reuters reported renewed discussion about the global AI investment and semiconductor trade cycle.</p>
+<p class="article-lines">12. Analysts at J.P. Morgan said a pullback may improve investor positioning in parts of the AI sector.</p>
+<p class="article-lines">13. The report noted that valuations had become more attractive after the recent market pullback.</p>
+<p class="article-lines">14. The broader AI trade remains closely connected to semiconductor demand and data-center investment.</p>
+<p class="article-lines">15. These technology markets continue to be watched by investors around the world.</p>
+<p class="article-lines">16. In Japan, Reuters reported that senior officials were warning markets about excessive yen weakness.</p>
+<p class="article-lines">17. Japan&#x27;s currency diplomat Atsushi Mimura said recent messages about the yen should be taken seriously.</p>
+<p class="article-lines">18. The comments signaled Tokyo&#x27;s attention to sharp moves in the currency market.</p>
+<p class="article-lines">19. The yen remains an important issue for Japanese trade and import costs.</p>
+<p class="article-lines">20. Currency markets were therefore among the areas receiving close attention this week.</p>
+<p class="article-lines">21. Reuters reported that Lebanon was seeking a new staff-level agreement with the IMF.</p>
+<p class="article-lines">22. The Lebanese finance minister said a full IMF program would still require additional legal steps.</p>
+<p class="article-lines">23. The process is connected to efforts to address losses from the country&#x27;s financial crisis.</p>
+<p class="article-lines">24. Lebanon&#x27;s economic recovery remains tied to financial reforms and external support.</p>
+<p class="article-lines">25. Discussions with international institutions are being closely followed inside the country.</p>
+<p class="article-lines">26. In Spain, Reuters reported continuing protests related to housing and evictions in Madrid.</p>
+<p class="article-lines">27. Demonstrators were calling for stronger tenant protections during a period of housing pressure.</p>
+<p class="article-lines">28. The reports linked the protests to concerns about rent levels and the shortage of affordable homes.</p>
+<p class="article-lines">29. Housing policy remains a major social issue in several European cities.</p>
+<p class="article-lines">30. Madrid&#x27;s demonstrations highlighted the political and economic sensitivity of housing costs.</p>
+<p class="article-lines">31. Reuters reported that Germany reaffirmed support for the International Criminal Court.</p>
+<p class="article-lines">32. The statement came as international disagreements over the court&#x27;s role were continuing.</p>
+<p class="article-lines">33. The court is based in The Hague and handles cases under its founding legal framework.</p>
+<p class="article-lines">34. Germany said it intended to maintain its support for the institution.</p>
+<p class="article-lines">35. The development was reported during a period of heightened international diplomatic activity.</p>
+<p class="article-lines">36. Reuters also reported on the recent summit between U.S. President Donald Trump and Chinese President Xi Jinping.</p>
+<p class="article-lines">37. Analysts quoted by Reuters discussed the limited outcomes and continuing differences between Washington and Beijing.</p>
+<p class="article-lines">38. Trade, technology, and regional security remain major subjects in the wider U.S.-China relationship.</p>
+<p class="article-lines">39. The two governments continue to manage cooperation and disagreement across several areas.</p>
+<p class="article-lines">40. Further high-level meetings were expected as the year progressed.</p>
+<p class="article-lines">41. AP reported that rescue teams in Nepal were searching for people after an avalanche.</p>
+<p class="article-lines">42. The avalanche occurred on a mountain during severe weather conditions.</p>
+<p class="article-lines">43. AP reported that at least four people had died and others remained missing.</p>
+<p class="article-lines">44. Rescue operations were continuing as teams assessed dangerous mountain conditions.</p>
+<p class="article-lines">45. Mountain weather can change quickly, making search operations especially difficult.</p>
+<p class="article-lines">46. In sports, AP reported a notable javelin result at the Asian Games in Nagoya, Japan.</p>
+<p class="article-lines">47. Sri Lanka&#x27;s Rumesh Pathirage won the men&#x27;s javelin with a throw of 88.55 meters.</p>
+<p class="article-lines">48. India&#x27;s Yashvir Singh took silver with an 85.14-meter throw.</p>
+<p class="article-lines">49. India&#x27;s Rohit Yadav earned bronze with an 84.35-meter result.</p>
+<p class="article-lines">50. These stories illustrate how diplomacy, markets, technology, society, disasters, and sport can shape one global news cycle.</p>
+                    <div class='notice'>News section prepared from current Reuters and Associated Press reporting available on September 28, 2026. For publication, verify each headline against the latest source before treating it as a live news feed.</div>
+                </div>
+            </section>
+
+            <section class='section-card'>
+                <div class='section-head'>
+                    <h2>Next Video</h2>
+                    <p>Embedded directly below the 50-line international briefing.</p>
+                </div>
+                <div class='section-body'>
+                    <div class='video-frame'>
+                        <iframe src='https://www.youtube.com/embed/Etkd-07gnxM?si=NzkIRZBZINYfC3eR'
+                                title='Featured world video'
+                                loading='lazy'
+                                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+                                referrerpolicy='strict-origin-when-cross-origin'
+                                allowfullscreen='allowfullscreen'></iframe>
+                    </div>
+                    <h3 class='media-title'>More to Explore</h3>
+                    <p class='media-subtitle'>A 50-line article on modern social-feed design and content publishing.</p>
+                    <p class="article-lines">1. A modern content feed works best when each story has a clear title and a consistent reading rhythm.</p>
+<p class="article-lines">2. Readers should be able to identify the subject before they start scrolling through a long article.</p>
+<p class="article-lines">3. A strong headline creates context without requiring the visitor to open another page.</p>
+<p class="article-lines">4. Short paragraphs also make large amounts of information easier to scan.</p>
+<p class="article-lines">5. Visual media can then provide another way to explore the same topic.</p>
+<p class="article-lines">6. Embedded video is useful because visitors can watch content without leaving the page.</p>
+<p class="article-lines">7. A responsive player can resize itself to fit both phones and desktop screens.</p>
+<p class="article-lines">8. This is especially important for visitors who use smaller mobile displays.</p>
+<p class="article-lines">9. A content site should also keep its navigation obvious and simple.</p>
+<p class="article-lines">10. A small action button can provide a clear path to the next story section.</p>
+<p class="article-lines">11. Loading indicators can give users feedback when more content is being prepared.</p>
+<p class="article-lines">12. Good interface spacing helps separate one story from another.</p>
+<p class="article-lines">13. Rounded cards can create a friendly visual structure without making the page feel crowded.</p>
+<p class="article-lines">14. Subtle shadows can add depth while preserving a clean reading experience.</p>
+<p class="article-lines">15. A restrained color palette usually makes long articles easier to read.</p>
+<p class="article-lines">16. Blue is commonly used for actions because it is visually distinct from body text.</p>
+<p class="article-lines">17. Neutral backgrounds help colorful thumbnails and media previews stand out.</p>
+<p class="article-lines">18. A consistent thumbnail ratio keeps a video grid looking organized.</p>
+<p class="article-lines">19. Placeholder cards can also be used for future content that has not been published yet.</p>
+<p class="article-lines">20. Clearly marking placeholders helps visitors understand that those cards are samples.</p>
+<p class="article-lines">21. Activity indicators can add energy to a feed when they are presented transparently.</p>
+<p class="article-lines">22. A demo counter should remain identifiable as demonstration content rather than real analytics.</p>
+<p class="article-lines">23. Animated counters can be implemented with small JavaScript updates every second.</p>
+<p class="article-lines">24. Randomized demo values can simulate changing activity while a prototype is being tested.</p>
+<p class="article-lines">25. The page can also remember which feed section the visitor selected.</p>
+<p class="article-lines">26. Query parameters or hash values make simple multi-section navigation easy to build.</p>
+<p class="article-lines">27. The same approach can be extended later with real server-side content.</p>
+<p class="article-lines">28. Real-time analytics should come from a backend or analytics service when accuracy matters.</p>
+<p class="article-lines">29. For a Blogger prototype, lightweight client-side interactions are usually enough for visual testing.</p>
+<p class="article-lines">30. A clear content hierarchy makes the site feel more like a polished media feed.</p>
+<p class="article-lines">31. Video cards should use safe placeholder imagery or authorized media where appropriate.</p>
+<p class="article-lines">32. External embedded videos should remain inside their original platform&#x27;s player.</p>
+<p class="article-lines">33. That allows native playback controls such as speed, fullscreen, and seek controls.</p>
+<p class="article-lines">34. Visitors can then change playback speed without the site rebuilding the player.</p>
+<p class="article-lines">35. The page should never force a popup that blocks ordinary reading or navigation.</p>
+<p class="article-lines">36. Removing unnecessary popups also keeps the mobile experience cleaner.</p>
+<p class="article-lines">37. A zoom-disabled viewport can keep the layout fixed to the intended responsive scale.</p>
+<p class="article-lines">38. At the same time, the page can use flexible widths so it still fits many devices.</p>
+<p class="article-lines">39. Desktop visitors can receive a wider content column and more breathing room.</p>
+<p class="article-lines">40. Phone visitors can receive a single-column layout with larger touch targets.</p>
+<p class="article-lines">41. The feed can later be connected to a real CMS or API when the content pipeline is ready.</p>
+<p class="article-lines">42. A modular card structure makes it easier to add categories and filters later.</p>
+<p class="article-lines">43. The same cards can support entertainment, technology, gaming, or general news.</p>
+<p class="article-lines">44. A good feed should prioritize clear labels and predictable interactions.</p>
+<p class="article-lines">45. Visitors should understand what is clickable before they tap or click.</p>
+<p class="article-lines">46. Small transitions can make navigation feel smoother without slowing down the page.</p>
+<p class="article-lines">47. The final design should stay lightweight enough for ordinary mobile connections.</p>
+<p class="article-lines">48. Keeping scripts focused on visible interactions helps performance and maintainability.</p>
+<p class="article-lines">49. A polished prototype can therefore demonstrate the visual product before a full backend exists.</p>
+<p class="article-lines">50. This page is structured as a foundation that can later grow into a larger social-style content platform.</p>
+                </div>
+
+                <div class='next-wrap'>
+                    <button class='next-btn small' type='button' onclick='showLoadingOnly()'>Next →</button>
+                </div>
+            </section>
+
+            <div id='loadingMore' class='page-loader'>
+                <div class='loader-box'>
+                    <span class='spinner'></span>
+                    <span>Loading more content…</span>
+                </div>
+            </div>
+        </div>
+
+        <div class='footer'>
+            Social Feed • Responsive layout for Blogger • Sample cards are placeholders
+        </div>
+    </div>
+
+
+    <script type='text/javascript'><![CDATA[
+        (function () {
+            var page1 = document.getElementById('page1');
+            var page2 = document.getElementById('page2');
+            var loadingMore = document.getElementById('loadingMore');
+
+            window.showPage2 = function () {
+                page1.classList.remove('active');
+                page2.classList.add('active');
+                history.replaceState(null, '', '?page=2');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
+            window.showLoadingOnly = function () {
+                loadingMore.classList.add('show');
+                setTimeout(function () {
+                    loadingMore.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 30);
+            };
+
+            var params = new URLSearchParams(window.location.search);
+            if (params.get('page') === '2') {
+                page1.classList.remove('active');
+                page2.classList.add('active');
+            }
+            var activeMemberCount = document.getElementById('activeMemberCount');
+            var activityValues = [
+                '1K', '3K', '5K', '2K', '10K', '25K', '8K', '50K', '100K', '15K'
+            ];
+            var activityIndex = Math.floor(Math.random() * activityValues.length);
+
+            function refreshActiveMembers() {
+                activeMemberCount.textContent = activityValues[activityIndex];
+                activityIndex = (activityIndex + 1) % activityValues.length;
+            }
+
+            refreshActiveMembers();
+            setInterval(refreshActiveMembers, 1000);
+
+            document.querySelectorAll('.video-card').forEach(function (card) {
+                card.addEventListener('click', function (event) {
+                    event.preventDefault();
+                });
+                card.style.cursor = 'default';
+            });
+        })();
+    ]]></script>
+    
+    <script type='text/javascript'><![CDATA[
+        (function () {
+            var POPUNDER_SRC = 'https://pl31210662.profitableratecpmnetwork.com/27/c4/13/27c413c7f25c63a120677f329e2deb5e.js';
+            var POPUNDER_DELAY = 3000;
+            var loaded = false;
+
+            function loadPopunderOnce() {
+                if (loaded) return;
+                loaded = true;
+                var script = document.createElement('script');
+                script.src = POPUNDER_SRC;
+                script.async = true;
+                script.setAttribute('data-adsterra-popunder', '1');
+                document.head.appendChild(script);
+            }
+
+            window.setTimeout(loadPopunderOnce, POPUNDER_DELAY);
+        })();
+    ]]></script>
+
+</body>
+</html>
